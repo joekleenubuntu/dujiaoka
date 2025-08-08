@@ -5,6 +5,7 @@ namespace App\Admin\Forms;
 use App\Models\BaseModel;
 use Dcat\Admin\Widgets\Form;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class SystemSetting extends Form
 {
@@ -17,7 +18,7 @@ class SystemSetting extends Form
      */
     public function handle(array $input)
     {
-        $envData = [
+        $secrets = [
             'MAIL_HOST' => $input['host'] ?? '',
             'MAIL_PORT' => $input['port'] ?? '',
             'MAIL_USERNAME' => $input['username'] ?? '',
@@ -26,12 +27,22 @@ class SystemSetting extends Form
             'MAIL_FROM_ADDRESS' => $input['from_address'] ?? '',
             'MAIL_FROM_NAME' => $input['from_name'] ?? '',
             'MAIL_DRIVER' => $input['driver'] ?? 'smtp',
+            'SERVER_JIANG_TOKEN' => $input['server_jiang_token'] ?? '',
+            'TELEGRAM_BOT_TOKEN' => $input['telegram_bot_token'] ?? '',
+            'TELEGRAM_USERID' => $input['telegram_userid'] ?? '',
+            'BARK_SERVER' => $input['bark_server'] ?? '',
+            'BARK_TOKEN' => $input['bark_token'] ?? '',
+            'QYWXBOT_KEY' => $input['qywxbot_key'] ?? '',
+            'GEETEST_ID' => $input['geetest_id'] ?? '',
+            'GEETEST_KEY' => $input['geetest_key'] ?? '',
         ];
-        set_env_file($envData);
+        set_env_file($secrets);
+        // For other settings, we save them to a json file.
+        Storage::disk('local')->put('settings.json', json_encode($input));
         Cache::put('system-setting', $input);
         return $this
-				->response()
-				->success(admin_trans('system-setting.rule_messages.save_system_setting_success'));
+            ->response()
+            ->success(admin_trans('system-setting.rule_messages.save_system_setting_success'));
     }
 
     /**

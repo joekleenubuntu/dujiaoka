@@ -9,6 +9,9 @@ use App\Service\GoodsService;
 use App\Service\OrderProcessService;
 use App\Service\OrderService;
 use App\Service\PayService;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 use Jenssegers\Agent\Agent;
 
@@ -55,6 +58,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
+        if (Schema::hasTable('admin_settings')) {
+            $settings = Cache::get('system-setting');
+            if (empty($settings)) {
+                if (Storage::disk('local')->exists('settings.json')) {
+                    $settingsJson = Storage::disk('local')->get('settings.json');
+                    $settings = json_decode($settingsJson, true);
+                    Cache::put('system-setting', $settings);
+                }
+            }
+        }
     }
 }
