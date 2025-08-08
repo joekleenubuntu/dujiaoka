@@ -17,6 +17,17 @@ class SystemSetting extends Form
      */
     public function handle(array $input)
     {
+        $envData = [
+            'MAIL_HOST' => $input['host'] ?? '',
+            'MAIL_PORT' => $input['port'] ?? '',
+            'MAIL_USERNAME' => $input['username'] ?? '',
+            'MAIL_PASSWORD' => $input['password'] ?? '',
+            'MAIL_ENCRYPTION' => $input['encryption'] ?? '',
+            'MAIL_FROM_ADDRESS' => $input['from_address'] ?? '',
+            'MAIL_FROM_NAME' => $input['from_name'] ?? '',
+            'MAIL_DRIVER' => $input['driver'] ?? 'smtp',
+        ];
+        set_env_file($envData);
         Cache::put('system-setting', $input);
         return $this
 				->response()

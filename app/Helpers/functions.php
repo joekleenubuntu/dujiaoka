@@ -234,3 +234,31 @@ if (!function_exists('assoc_unique')) {
         return $arr;
     }
 }
+
+if (!function_exists('set_env_file')) {
+    /**
+     * modify .env file
+     * @param array $data
+     */
+    function set_env_file(array $data)
+    {
+        $envPath = base_path() . DIRECTORY_SEPARATOR . '.env';
+        $content = file_get_contents($envPath);
+        $content = explode("\n", $content);
+        foreach ($data as $key => $value) {
+            $isNew = true;
+            foreach ($content as $k => $v) {
+                if (strpos($v, $key) !== false && strpos($v, '=') !== false) {
+                    $content[$k] = $key . '=' . $value;
+                    $isNew = false;
+                    break;
+                }
+            }
+            if ($isNew) {
+                $content[] = $key . '=' . $value;
+            }
+        }
+        $content = implode("\n", $content);
+        file_put_contents($envPath, $content);
+    }
+}
